@@ -9,6 +9,7 @@ import 'package:awake_social/utils/screen_util/screen_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends BasePage {
   const LoginPage({Key? key}) : super(key: key);
@@ -29,7 +30,7 @@ class _LoginPageState extends BasePageState<LoginPage, BaseBloc> {
   final _userPasswordFocus = FocusNode();
 
   late String _token;
-  late String _password;
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   @override
   void onCreate() {
@@ -52,6 +53,11 @@ class _LoginPageState extends BasePageState<LoginPage, BaseBloc> {
   void _hiddenKeyBoard() {
     Future.delayed(const Duration(),
         () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
+  }
+
+  Future<void> _saveToken(String token) async {
+    final SharedPreferences prefs = await _prefs;
+    prefs.setString(Constants.LOGIN_TOKEN, token);
   }
 
   @override
@@ -183,12 +189,10 @@ class _LoginPageState extends BasePageState<LoginPage, BaseBloc> {
                         _userPasswordKey.currentState!.validate()) {
                       _token = _userNameController.text +
                           _userPasswordController.text;
-                      _password = _userPasswordController.text;
                       if (kDebugMode) {
                         print('Token: $_token');
                       }
-                      PrefsUtil.putString(Constants.LOGIN_TOKEN, _token);
-                      PrefsUtil.putString(Constants.LOGIN_PASSWORD, _password);
+                      _saveToken(_token);
                       Navigator.pushNamed(context, NavigationPage.routeName)
                           .then((value) {
                         _userPasswordController.clear();

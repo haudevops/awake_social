@@ -18,7 +18,7 @@ class RouterSettings {
       case LoginPage.routeName:
         return SlideLeftRoute(const LoginPage());
       case HomePage.routeName:
-        return SlideLeftRoute(const HomePage());
+        return SlideLeftRoute(HomePage());
       case NavigationPage.routeName:
         return SlideLeftRoute(const NavigationPage());
       case PeopleSocialPage.routeName:

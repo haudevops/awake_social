@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
                 backgroundColor: Color(0xFF1F1F1F)),
             iconTheme: const IconThemeData(color: Colors.white)),
         onGenerateRoute: RouterSettings.allRoutes,
-        initialRoute: NavigationPage.routeName,
+        initialRoute: SplashPage.routeName,
       )),
     );
   }
