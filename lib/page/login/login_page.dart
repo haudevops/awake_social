@@ -81,7 +81,7 @@ class _LoginPageState extends BasePageState<LoginPage, BaseBloc> {
               repeatForever: true,
               animatedTexts: [
                 ColorizeAnimatedText(
-                  'Awake Foods',
+                  'Awake',
                   speed: const Duration(milliseconds: 500),
                   textStyle: TextStyle(
                     fontSize: ScreenUtil().setSp(40),

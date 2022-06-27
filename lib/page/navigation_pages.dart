@@ -44,7 +44,7 @@ class _NavigationPageState extends BasePageState<NavigationPage, BaseBloc>
           appBar: AppBar(
             automaticallyImplyLeading: false,
             title: Text(
-              'Awake Foods',
+              'Awake',
               style: TextStyle(
                   fontSize: ScreenUtil().setSp(25),
                   color: Colors.white,
