@@ -22,7 +22,7 @@ class ScreenUtilInit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MediaQuery(
-      data: MediaQueryData.fromWindow(WidgetsBinding.instance!.window),
+      data: MediaQueryData.fromWindow(WidgetsBinding.instance.window),
       child: LayoutBuilder(builder: (_, BoxConstraints constraints) {
         if (constraints.maxWidth != 0) {
           final Orientation orientation =

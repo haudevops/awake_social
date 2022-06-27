@@ -29,7 +29,7 @@ abstract class BasePageState<Page extends BasePage, B extends BaseBloc?>
   @override
   void initState() {
     NavigatorManger().addWidget(this);
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     _bloc = widget.bloc as B?;
     onCreate();
     _observerBloc();
@@ -40,7 +40,7 @@ abstract class BasePageState<Page extends BasePage, B extends BaseBloc?>
   @override
   void dispose() {
     onDestroy();
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     NavigatorManger().removeWidget(this);
     widget.bloc?.dispose();
     widget.bloc?.onDestroy();

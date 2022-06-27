@@ -2,20 +2,20 @@ import 'package:awake_social/base/base.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class HomePage extends BasePage {
-  const HomePage({Key? key}) : super(key: key);
-  static const routeName = '/HomePage';
+class PeopleSocialPage extends BasePage {
+  const PeopleSocialPage({Key? key}) : super(key: key);
+  static const routeName = '/PeopleSocialPage';
 
   @override
-  State<StatefulWidget> createState() => _HomePageState();
+  State<StatefulWidget> createState() => _PeopleSocialPageState();
 }
 
-class _HomePageState extends BasePageState<HomePage, BaseBloc> {
+class _PeopleSocialPageState extends BasePageState<PeopleSocialPage, BaseBloc> {
   @override
   Widget buildWidget(BuildContext context) {
     return const Center(
       child: Text(
-        'Hello',
+        'People',
         style: TextStyle(color: Colors.white),
       ),
     );
@@ -23,7 +23,7 @@ class _HomePageState extends BasePageState<HomePage, BaseBloc> {
 
   @override
   void onCreate() {
-    if (kDebugMode) print('Home Page');
+    if (kDebugMode) print('People Page');
   }
 
   @override

@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: () => Builder(builder: (context) => MaterialApp(
-        title: 'Awake Foods',
+        title: 'Awake',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
             scaffoldBackgroundColor: const Color(0xFF101010),
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
                 backgroundColor: Color(0xFF1F1F1F)),
             iconTheme: const IconThemeData(color: Colors.white)),
         onGenerateRoute: RouterSettings.allRoutes,
-        initialRoute: SplashPage.routeName,
+        initialRoute: NavigationPage.routeName,
       )),
     );
   }

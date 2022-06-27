@@ -1,5 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:awake_social/base/base.dart';
+import 'package:awake_social/page/navigation_pages.dart';
 import 'package:awake_social/page/page_export.dart';
 import 'package:awake_social/res/res.dart';
 import 'package:awake_social/utils/constants.dart';
@@ -188,7 +189,7 @@ class _LoginPageState extends BasePageState<LoginPage, BaseBloc> {
                       }
                       PrefsUtil.putString(Constants.LOGIN_TOKEN, _token);
                       PrefsUtil.putString(Constants.LOGIN_PASSWORD, _password);
-                      Navigator.pushNamed(context, HomePage.routeName)
+                      Navigator.pushNamed(context, NavigationPage.routeName)
                           .then((value) {
                         _userPasswordController.clear();
                         FocusScope.of(context).requestFocus(_userPasswordFocus);
