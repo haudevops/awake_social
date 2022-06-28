@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:awake_social/base/base.dart';
+import 'package:awake_social/model/news_model/news_model.dart';
 import 'package:awake_social/model/story_model/story_model.dart';
 import 'package:awake_social/page/page_export.dart';
 import 'package:awake_social/utils/screen_util/screen_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends BasePage<HomeBloc> {
   HomePage({Key? key}) : super(key: key, bloc: HomeBloc());
@@ -14,31 +19,47 @@ class HomePage extends BasePage<HomeBloc> {
 }
 
 class _HomePageState extends BasePageState<HomePage, HomeBloc> {
+  String? _data;
+  late NewsModel _newsModel;
+
   @override
   void onCreate() {
     if (kDebugMode) print('Home Page');
+    _parseJson();
   }
 
   @override
   void onDestroy() {}
 
+  void _parseJson() async {
+    _data = await DefaultAssetBundle.of(context)
+        .loadString("assets/data/news_data.json");
+    final jsonResult = jsonDecode(_data!);
+    if (kDebugMode) print(jsonResult);
+    setState(() {
+      _newsModel = NewsModel.fromJson(jsonResult);
+    });
+  }
+
   @override
   Widget buildWidget(BuildContext context) {
-    return SizedBox(
+    return Container(
+      margin: EdgeInsets.all(
+        ScreenUtil().setWidth(8),
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _storyWidget(),
+          _listNewItems(),
         ],
       ),
     );
   }
 
   Widget _storyWidget() {
-    return Container(
+    return SizedBox(
       height: ScreenUtil().setHeight(200),
-      margin: EdgeInsets.symmetric(
-        vertical: ScreenUtil().setWidth(8),
-      ),
       child: StreamBuilder<List<ItemStory>>(
         stream: getBloc.outStory,
         builder: (context, snapshot) {
@@ -51,8 +72,8 @@ class _HomePageState extends BasePageState<HomePage, HomeBloc> {
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
               return Container(
-                margin: EdgeInsets.symmetric(
-                  horizontal: ScreenUtil().setWidth(8),
+                margin: EdgeInsets.only(
+                  right: ScreenUtil().setWidth(8),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
@@ -66,6 +87,76 @@ class _HomePageState extends BasePageState<HomePage, HomeBloc> {
             },
           );
         },
+      ),
+    );
+  }
+
+  Widget _listNewItems() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: _newsModel.data?.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return _newsWidget(_newsModel.data![index]);
+        },
+      ),
+    );
+  }
+
+  Widget _newsWidget(ItemNews? data) {
+    return Container(
+      width: ScreenUtil().screenWidth,
+      padding: EdgeInsets.all(ScreenUtil().setHeight(10)),
+      margin: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(10)),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1F1F1F),
+        borderRadius: BorderRadius.all(
+          Radius.circular(
+            ScreenUtil().setHeight(8),
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                  height: ScreenUtil().setHeight(25),
+                  width: ScreenUtil().setWidth(25),
+                  child: SvgPicture.asset('${data?.avatar}')),
+              SizedBox(
+                width: ScreenUtil().setWidth(10),
+              ),
+              Text(
+                '${data?.userName}',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: ScreenUtil().setSp(16),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: ScreenUtil().setHeight(10),
+          ),
+          SizedBox(
+            child: Image.network('${data?.linkImg}'),
+          ),
+          SizedBox(
+            height: ScreenUtil().setHeight(10),
+          ),
+          Text(
+            '${data?.content}',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: ScreenUtil().setSp(16),
+            ),
+            maxLines: 5,
+            overflow: TextOverflow.ellipsis,
+          )
+        ],
       ),
     );
   }
