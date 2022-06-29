@@ -2,12 +2,10 @@ import 'dart:convert';
 
 import 'package:awake_social/base/base.dart';
 import 'package:awake_social/model/news_model/news_model.dart';
-import 'package:awake_social/model/story_model/story_model.dart';
 import 'package:awake_social/page/page_export.dart';
 import 'package:awake_social/utils/screen_util/screen_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends BasePage<HomeBloc> {
@@ -20,7 +18,7 @@ class HomePage extends BasePage<HomeBloc> {
 
 class _HomePageState extends BasePageState<HomePage, HomeBloc> {
   String? _data;
-  late NewsModel _newsModel;
+  NewsModel? _newsModel;
 
   @override
   void onCreate() {
@@ -39,6 +37,7 @@ class _HomePageState extends BasePageState<HomePage, HomeBloc> {
     setState(() {
       _newsModel = NewsModel.fromJson(jsonResult);
     });
+
   }
 
   @override
@@ -47,57 +46,83 @@ class _HomePageState extends BasePageState<HomePage, HomeBloc> {
       margin: EdgeInsets.all(
         ScreenUtil().setWidth(8),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        shrinkWrap: true,
         children: [
           _storyWidget(),
           _listNewItems(),
         ],
-      ),
+      )
     );
   }
-
   Widget _storyWidget() {
     return SizedBox(
       height: ScreenUtil().setHeight(200),
-      child: StreamBuilder<List<ItemStory>>(
-        stream: getBloc.outStory,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const SizedBox();
-          }
-          return ListView.builder(
-            itemCount: snapshot.data?.length,
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: EdgeInsets.only(
-                  right: ScreenUtil().setWidth(8),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    snapshot.data?[index].img ?? '',
-                    width: ScreenUtil().setHeight(120),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              );
-            },
+      child: ListView.builder(
+        itemCount: _newsModel?.data?.length ?? 0,
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) {
+          return Container(
+            margin: EdgeInsets.only(
+              right: ScreenUtil().setWidth(8),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                _newsModel!.data?[index].linkImg ?? '',
+                width: ScreenUtil().setHeight(120),
+                fit: BoxFit.cover,
+              ),
+            ),
           );
         },
       ),
     );
   }
 
+  // Widget _storyWidget() {
+  //   return SizedBox(
+  //     height: ScreenUtil().setHeight(200),
+  //     child: StreamBuilder<List<ItemStory>>(
+  //       stream: getBloc.outStory,
+  //       builder: (context, snapshot) {
+  //         if (!snapshot.hasData) {
+  //           return const SizedBox();
+  //         }
+  //         return ListView.builder(
+  //           itemCount: snapshot.data?.length,
+  //           shrinkWrap: true,
+  //           scrollDirection: Axis.horizontal,
+  //           itemBuilder: (context, index) {
+  //             return Container(
+  //               margin: EdgeInsets.only(
+  //                 right: ScreenUtil().setWidth(8),
+  //               ),
+  //               child: ClipRRect(
+  //                 borderRadius: BorderRadius.circular(8),
+  //                 child: Image.network(
+  //                   snapshot.data?[index].img ?? '',
+  //                   width: ScreenUtil().setHeight(120),
+  //                   fit: BoxFit.cover,
+  //                 ),
+  //               ),
+  //             );
+  //           },
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+
   Widget _listNewItems() {
-    return Expanded(
+    return SizedBox(
       child: ListView.builder(
-        itemCount: _newsModel.data?.length,
+        itemCount: _newsModel?.data?.length ?? 0,
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          return _newsWidget(_newsModel.data![index]);
+          return _newsWidget(_newsModel!.data?[index]);
         },
       ),
     );
