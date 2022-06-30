@@ -1,11 +1,16 @@
 import 'package:awake_social/base/base.dart';
+import 'package:awake_social/model/news_model/news_api.dart';
 import 'package:awake_social/model/story_model/story_model.dart';
+import 'package:awake_social/service/repository_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
 class HomeBloc extends BaseBloc {
   final _getStoryController = BehaviorSubject<List<ItemStory>>();
+  final _getNewsController = BehaviorSubject<NewsAPI>();
 
   Stream<List<ItemStory>> get outStory => _getStoryController.stream;
+  Stream<NewsAPI> get outNews => _getNewsController.stream;
 
   final List<ItemStory> _data = [];
 
@@ -33,9 +38,24 @@ class HomeBloc extends BaseBloc {
     _getStoryController.sink.add(_data);
   }
 
+  Future<void> getNews() async {
+    showLoading();
+    await Repository.instance.getNews().then((value) {
+      if(value.status == 'ok'){
+        _getNewsController.sink.add(value);
+      }
+    }).catchError((e){
+      if (kDebugMode) print(e.toString());
+    });
+    hiddenLoading();
+  }
+
+
+
   @override
   void onCreate() {
     getStory();
+    getNews();
   }
 
   @override

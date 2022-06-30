@@ -29,6 +29,8 @@ class RouterSettings {
         return SlideLeftRoute(const NotificationPage());
       case SettingPage.routeName:
         return SlideLeftRoute(const SettingPage());
+      case HomeDetailPage.routeName:
+        return SlideLeftRoute(HomeDetailPage(data: arg));
       default:
         throw ('this routers name does not exist');
     }

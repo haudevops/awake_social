@@ -1,8 +1,11 @@
 import 'dart:convert';
 
 import 'package:awake_social/base/base.dart';
+import 'package:awake_social/model/news_model/news_api.dart';
 import 'package:awake_social/model/news_model/news_model.dart';
 import 'package:awake_social/page/page_export.dart';
+import 'package:awake_social/res/colors.dart';
+import 'package:awake_social/routers/screen_arguments.dart';
 import 'package:awake_social/utils/screen_util/screen_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -37,27 +40,40 @@ class _HomePageState extends BasePageState<HomePage, HomeBloc> {
     setState(() {
       _newsModel = NewsModel.fromJson(jsonResult);
     });
+  }
 
+  Future<void> _refresh() async{
+    await getBloc.getNews();
   }
 
   @override
   Widget buildWidget(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(
-        ScreenUtil().setWidth(8),
-      ),
-      child: ListView(
-        shrinkWrap: true,
-        children: [
-          _storyWidget(),
-          _listNewItems(),
-        ],
-      )
-    );
+        margin: EdgeInsets.all(
+          ScreenUtil().setWidth(8),
+        ),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await _refresh();
+          },
+          color: Colors.black,
+          backgroundColor: Colors.white,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              _storyWidget(),
+              _listNewItems(),
+            ],
+          ),
+        ));
   }
+
   Widget _storyWidget() {
-    return SizedBox(
+    return Container(
       height: ScreenUtil().setHeight(200),
+      margin: EdgeInsets.only(
+        right: ScreenUtil().setWidth(8),
+      ),
       child: ListView.builder(
         itemCount: _newsModel?.data?.length ?? 0,
         shrinkWrap: true,
@@ -81,54 +97,36 @@ class _HomePageState extends BasePageState<HomePage, HomeBloc> {
     );
   }
 
-  // Widget _storyWidget() {
-  //   return SizedBox(
-  //     height: ScreenUtil().setHeight(200),
-  //     child: StreamBuilder<List<ItemStory>>(
-  //       stream: getBloc.outStory,
-  //       builder: (context, snapshot) {
-  //         if (!snapshot.hasData) {
-  //           return const SizedBox();
-  //         }
-  //         return ListView.builder(
-  //           itemCount: snapshot.data?.length,
-  //           shrinkWrap: true,
-  //           scrollDirection: Axis.horizontal,
-  //           itemBuilder: (context, index) {
-  //             return Container(
-  //               margin: EdgeInsets.only(
-  //                 right: ScreenUtil().setWidth(8),
-  //               ),
-  //               child: ClipRRect(
-  //                 borderRadius: BorderRadius.circular(8),
-  //                 child: Image.network(
-  //                   snapshot.data?[index].img ?? '',
-  //                   width: ScreenUtil().setHeight(120),
-  //                   fit: BoxFit.cover,
-  //                 ),
-  //               ),
-  //             );
-  //           },
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
-
   Widget _listNewItems() {
-    return SizedBox(
-      child: ListView.builder(
-        itemCount: _newsModel?.data?.length ?? 0,
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          return _newsWidget(_newsModel!.data?[index]);
+    return Container(
+      child: StreamBuilder<NewsAPI>(
+        stream: getBloc.outNews,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const SizedBox();
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator(
+              color: Colors.white,
+              backgroundColor: AppColor.backgroundCard,
+            );
+          }
+          return Expanded (
+            child: ListView.builder(
+              itemCount: snapshot.data?.articles?.length,
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return _newsWidget(snapshot.data?.articles?[index]);
+              },
+            ),
+          );
         },
       ),
     );
   }
 
-  Widget _newsWidget(ItemNews? data) {
+  Widget _newsWidget(Articles? data) {
     return Container(
       width: ScreenUtil().screenWidth,
       padding: EdgeInsets.all(ScreenUtil().setHeight(10)),
@@ -141,47 +139,61 @@ class _HomePageState extends BasePageState<HomePage, HomeBloc> {
           ),
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              SizedBox(
-                  height: ScreenUtil().setHeight(25),
-                  width: ScreenUtil().setWidth(25),
-                  child: SvgPicture.asset('${data?.avatar}')),
-              SizedBox(
-                width: ScreenUtil().setWidth(10),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            HomeDetailPage.routeName,
+            arguments:
+                ScreenArguments(arg1: data?.urlToImage, arg2: data?.content),
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              child: Row(
+                children: [
+                  SizedBox(
+                      height: ScreenUtil().setHeight(25),
+                      width: ScreenUtil().setWidth(25),
+                      child: SvgPicture.asset('assets/svg/ic_tensorflow.svg')),
+                  SizedBox(
+                    width: ScreenUtil().setWidth(10),
+                  ),
+                  Text(
+                    data?.author ?? 'Incognito',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: ScreenUtil().setSp(16),
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                '${data?.userName}',
+            ),
+            SizedBox(
+              height: ScreenUtil().setHeight(10),
+            ),
+            SizedBox(
+              child: data?.urlToImage != null ? Image.network('${data?.urlToImage}') : const SizedBox(),
+            ),
+            SizedBox(
+              height: ScreenUtil().setHeight(10),
+            ),
+            SizedBox(
+              child: Text(
+                '${data?.description}',
                 style: TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.w600,
                   fontSize: ScreenUtil().setSp(16),
                 ),
+                maxLines: 5,
+                overflow: TextOverflow.ellipsis,
               ),
-            ],
-          ),
-          SizedBox(
-            height: ScreenUtil().setHeight(10),
-          ),
-          SizedBox(
-            child: Image.network('${data?.linkImg}'),
-          ),
-          SizedBox(
-            height: ScreenUtil().setHeight(10),
-          ),
-          Text(
-            '${data?.content}',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: ScreenUtil().setSp(16),
-            ),
-            maxLines: 5,
-            overflow: TextOverflow.ellipsis,
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
