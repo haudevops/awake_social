@@ -10,4 +10,5 @@ export 'package:awake_social/page/live/live_page.dart';
 export 'package:awake_social/page/notification/notification_page.dart';
 export 'package:awake_social/page/notification/notification_bloc.dart';
 export 'package:awake_social/page/home/home_detail/home_detail_page.dart';
+export 'package:awake_social/page/change_password/change_password_page.dart';
 

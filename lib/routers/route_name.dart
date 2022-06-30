@@ -31,6 +31,8 @@ class RouterSettings {
         return SlideLeftRoute(const SettingPage());
       case HomeDetailPage.routeName:
         return SlideLeftRoute(HomeDetailPage(data: arg));
+      case ChangePasswordPage.routeName:
+        return SlideLeftRoute(const ChangePasswordPage());
       default:
         throw ('this routers name does not exist');
     }

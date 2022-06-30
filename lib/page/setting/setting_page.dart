@@ -31,6 +31,32 @@ class _SettingPageState extends BasePageState<SettingPage, BaseBloc> {
       child: Column(
         children: [
           _cardFunctions(
+            title: 'Account',
+            checkTrailing: true,
+            widget: const Icon(Icons.account_box),
+            onTap: (){},
+          ),
+          _cardFunctions(
+            title: 'Theme',
+            checkTrailing: true,
+            widget: const Icon(Icons.color_lens),
+            onTap: (){},
+          ),
+          _cardFunctions(
+            title: 'Language',
+            checkTrailing: true,
+            widget: const Icon(Icons.language),
+            onTap: (){},
+          ),
+          _cardFunctions(
+            title: 'Change Password',
+            checkTrailing: true,
+            widget: const Icon(Icons.password),
+            onTap: (){
+              Navigator.pushNamed(context, ChangePasswordPage.routeName);
+            },
+          ),
+          _cardFunctions(
             title: 'Logout',
             checkTrailing: true,
             widget: const Icon(Icons.logout),
