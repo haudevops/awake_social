@@ -54,8 +54,8 @@ class HomeBloc extends BaseBloc {
 
   @override
   void onCreate() {
-    getStory();
-    getNews();
+    // getStory();
+    // getNews();
   }
 
   @override
